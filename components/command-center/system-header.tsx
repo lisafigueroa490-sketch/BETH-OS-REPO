@@ -1,13 +1,22 @@
 "use client"
 
-import { Activity, Wifi, WifiOff, Shield } from "lucide-react"
+import { Activity, Wifi, WifiOff, Shield, Bell, Settings, Command } from "lucide-react"
 
 interface SystemHeaderProps {
   systemTime: Date
   isOnline: boolean
+  alertCount?: number
+  onSettingsClick?: () => void
+  onCommandPaletteClick?: () => void
 }
 
-export function SystemHeader({ systemTime, isOnline }: SystemHeaderProps) {
+export function SystemHeader({ 
+  systemTime, 
+  isOnline, 
+  alertCount = 0,
+  onSettingsClick,
+  onCommandPaletteClick
+}: SystemHeaderProps) {
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString("en-US", {
       hour12: false,
@@ -44,7 +53,38 @@ export function SystemHeader({ systemTime, isOnline }: SystemHeaderProps) {
         </div>
       </div>
 
-      <div className="flex items-center gap-4 md:gap-6 text-xs font-mono w-full sm:w-auto justify-between sm:justify-end">
+      <div className="flex items-center gap-3 md:gap-6 text-xs font-mono w-full sm:w-auto justify-between sm:justify-end flex-wrap">
+        {/* Quick Actions */}
+        <div className="flex items-center gap-1">
+          <button
+            onClick={onCommandPaletteClick}
+            className="p-2 rounded hover:bg-muted/50 transition-colors group"
+            title="Command Palette (Ctrl+K)"
+          >
+            <Command className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+          </button>
+          <button
+            onClick={onSettingsClick}
+            className="p-2 rounded hover:bg-muted/50 transition-colors group"
+            title="Settings"
+          >
+            <Settings className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+          </button>
+          <button
+            className="p-2 rounded hover:bg-muted/50 transition-colors group relative"
+            title="Alerts"
+          >
+            <Bell className={`w-4 h-4 transition-colors ${alertCount > 0 ? "text-destructive" : "text-muted-foreground group-hover:text-primary"}`} />
+            {alertCount > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold flex items-center justify-center">
+                {alertCount > 9 ? "9+" : alertCount}
+              </span>
+            )}
+          </button>
+        </div>
+
+        <div className="hidden sm:block h-6 w-px bg-border" />
+
         <div className="flex items-center gap-2">
           <Shield className="w-4 h-4 text-primary" />
           <span className="text-muted-foreground hidden sm:inline">SECURITY:</span>
